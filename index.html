@@ -1,5 +1,507 @@
-<html>
-    <h1> тут будет игра
-        
-    </h1>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>MVP Start — ваш минимально жизнеспособный продукт</title>
+    <!-- Подключаем современные шрифты (Google Fonts) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (бесплатные иконки) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #1a1e2b;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* Шапка */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            font-weight: 500;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #334155;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #3b82f6;
+        }
+
+        .btn-outline {
+            border: 1px solid #cbd5e1;
+            background: transparent;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-outline:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        /* Герой секция */
+        .hero {
+            padding: 80px 0 64px;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #eef2ff;
+            color: #3b82f6;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 40px;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            max-width: 900px;
+            margin: 0 auto 24px;
+            background: linear-gradient(to right, #0f172a, #2563eb);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            color: #475569;
+            max-width: 720px;
+            margin: 0 auto 32px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            font-weight: 600;
+            border-radius: 40px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            font-family: inherit;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            padding: 12px 32px;
+            font-weight: 600;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-secondary:hover {
+            border-color: #3b82f6;
+            background: #f8fafc;
+        }
+
+        /* Преимущества */
+        .features {
+            padding: 80px 0;
+            background-color: #f8fafc;
+            border-radius: 48px;
+            margin: 32px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 56px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 32px 24px;
+            border-radius: 32px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.02), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.08);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #3b82f6;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: #475569;
+        }
+
+        /* Секция контакта / подписки */
+        .contact {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .contact-card {
+            background: linear-gradient(145deg, #ffffff, #f1f5f9);
+            border-radius: 48px;
+            padding: 48px 32px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 32px;
+        }
+
+        .form-group input {
+            flex: 1;
+            min-width: 240px;
+            padding: 14px 20px;
+            border-radius: 60px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+        }
+
+        .btn-submit {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 14px 36px;
+            border-radius: 60px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-submit:hover {
+            background: #1e293b;
+        }
+
+        .status-message {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #10b981;
+            font-weight: 500;
+        }
+
+        /* Футер */
+        .footer {
+            border-top: 1px solid #e2e8f0;
+            padding: 40px 0;
+            text-align: center;
+            color: #64748b;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 24px;
+            }
+            h1 {
+                font-size: 2.4rem;
+            }
+            .hero-description {
+                font-size: 1rem;
+            }
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav-links {
+                gap: 24px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .features-grid {
+                gap: 24px;
+            }
+            .contact-card {
+                padding: 32px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.9rem;
+            }
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                text-align: center;
+            }
+            .btn-group {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="logo">MVP<span style="color:#3b82f6;">Start</span></div>
+            <div class="nav-links">
+                <a href="#">Главная</a>
+                <a href="#features">Возможности</a>
+                <a href="#contact">Контакты</a>
+            </div>
+            <button class="btn-outline" id="demoBtn">Демо-доступ</button>
+        </nav>
+
+        <section class="hero">
+            <div class="badge">⚡ Запускай быстрее. Итерация №1</div>
+            <h1>Создайте MVP <br> который приносит ценность</h1>
+            <p class="hero-description">
+                Полноценный прототип для проверки гипотез, привлечения первых клиентов и инвестиций. 
+                Минимальный код — максимальная эффективность.
+            </p>
+            <div class="btn-group">
+                <button class="btn-primary" id="getStartedBtn">Начать проект</button>
+                <button class="btn-secondary" id="learnMoreBtn">Подробнее →</button>
+            </div>
+        </section>
+    </div>
+
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">Всё, что нужно для старта</div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                    <h3>Молниеносная скорость</h3>
+                    <p>Готовая архитектура и современный стек позволяют запустить продукт за 2–3 недели.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Аналитика с первого дня</h3>
+                    <p>Встроенная телеметрия и метрики, чтобы понимать поведение пользователей.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <h3>Адаптивный дизайн</h3>
+                    <p>Идеальный UX на любых устройствах — от смартфонов до 4K мониторов.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Безопасность из коробки</h3>
+                    <p>Защита данных, HTTPS, базовые политики безопасности — готовый фундамент.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="contact" id="contact">
+            <div class="contact-card">
+                <i class="fas fa-envelope-open-text" style="font-size: 2.2rem; color:#3b82f6; margin-bottom: 12px; display: inline-block;"></i>
+                <h2 style="font-size: 1.9rem; font-weight: 700; margin: 12px 0;">Будьте в курсе</h2>
+                <p style="color: #475569; margin-bottom: 6px;">Получите доступ к бета-тестированию и полезные материалы про MVP</p>
+                <form id="subscribeForm">
+                    <div class="form-group">
+                        <input type="email" id="emailInput" placeholder="Ваш email" required>
+                        <button type="submit" class="btn-submit">Подписаться</button>
+                    </div>
+                    <div id="formStatus" class="status-message"></div>
+                </form>
+                <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 24px;">Никакого спама, только важные обновления.</p>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>© 2025 MVPStart — минимально жизнеспособный продукт для ваших идей</p>
+            <p style="margin-top: 12px; font-size: 0.8rem;">
+                <i class="fab fa-github"></i>  <i class="fab fa-twitter"></i>  <i class="fab fa-linkedin"></i>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Интерактив: уведомления, валидация, плавный скролл
+        const demoBtn = document.getElementById('demoBtn');
+        const getStartedBtn = document.getElementById('getStartedBtn');
+        const learnMoreBtn = document.getElementById('learnMoreBtn');
+        const subscribeForm = document.getElementById('subscribeForm');
+        const emailInput = document.getElementById('emailInput');
+        const formStatus = document.getElementById('formStatus');
+
+        // Функция показа временного сообщения (без alert)
+        function showMessage(element, text, isError = false) {
+            if (!element) return;
+            element.textContent = text;
+            element.style.color = isError ? '#ef4444' : '#10b981';
+            setTimeout(() => {
+                if (element.textContent === text) {
+                    element.textContent = '';
+                }
+            }, 3500);
+        }
+
+        // Демо-кнопка
+        demoBtn.addEventListener('click', () => {
+            showMessage(formStatus, '✨ Демо-доступ открыт! Мы свяжемся с вами в ближайшее время.', false);
+            // имитация отправки в консоль
+            console.log('[DEMO] Пользователь запросил демо-доступ');
+        });
+
+        getStartedBtn.addEventListener('click', () => {
+            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+            // подсветим форму
+            const contactCard = document.querySelector('.contact-card');
+            contactCard.style.transition = '0.3s';
+            contactCard.style.boxShadow = '0 0 0 2px #3b82f6';
+            setTimeout(() => {
+                contactCard.style.boxShadow = '';
+            }, 800);
+        });
+
+        learnMoreBtn.addEventListener('click', () => {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Обработка подписки (имитация API)
+        subscribeForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = emailInput.value.trim();
+            if (!email) {
+                showMessage(formStatus, 'Пожалуйста, введите email', true);
+                return;
+            }
+            const emailPattern = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                showMessage(formStatus, 'Введите корректный email (пример: name@domain.com)', true);
+                return;
+            }
+
+            // Имитация отправки на сервер
+            showMessage(formStatus, '📡 Отправка...', false);
+            setTimeout(() => {
+                // виртуальный успех
+                console.log(`MVP подписка: ${email}`);
+                showMessage(formStatus, '✅ Готово! Вы подписаны на новости MVPStart.', false);
+                emailInput.value = '';
+                // дополнительный эффект
+                const submitBtn = document.querySelector('.btn-submit');
+                submitBtn.style.transform = 'scale(0.98)';
+                setTimeout(() => { submitBtn.style.transform = ''; }, 150);
+            }, 500);
+        });
+
+        // Дополнительно: клик по иконкам соцсетей (просто информативно)
+        const socialIcons = document.querySelectorAll('.footer .fab');
+        socialIcons.forEach(icon => {
+            icon.style.cursor = 'pointer';
+            icon.addEventListener('click', (e) => {
+                let network = e.target.classList[1];
+                if (network === 'fa-github') network = 'GitHub';
+                if (network === 'fa-twitter') network = 'Twitter';
+                if (network === 'fa-linkedin') network = 'LinkedIn';
+                showMessage(formStatus, `🔗 Переход в ${network} (демо-режим)`, false);
+                console.log(`Клик по соцсети: ${network}`);
+            });
+        });
+
+        // Добавим лёгкую анимацию для карточек при загрузке
+        window.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.feature-card');
+            cards.forEach((card, idx) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, idx * 80);
+            });
+        });
+    </script>
+</body>
 </html>
