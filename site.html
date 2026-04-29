@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>AutoMarket — продажа автомобилей с пробегом и новых</title>
+    <!-- Font Awesome 6 (иконки) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* CSS переменные для светлой/тёмной темы */
+        :root {
+            --bg-body: #f5f7fb;
+            --bg-surface: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --border: #e2e8f0;
+            --card-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 4px rgba(0,0,0,0.05);
+            --hover-shadow: 0 20px 25px -12px rgba(0,0,0,0.1);
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --success: #10b981;
+        }
+
+        body.dark {
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --border: #334155;
+            --card-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            --hover-shadow: 0 20px 25px -12px rgba(0,0,0,0.4);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.2s;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Шапка */
+        .header {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .theme-toggle, .view-toggle {
+            background: transparent;
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-primary);
+            transition: 0.2s;
+        }
+
+        .view-toggle.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .favorite-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .favorite-count {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background: var(--danger);
+            color: white;
+            border-radius: 30px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* Вкладки */
+        .tabs {
+            display: flex;
+            gap: 20px;
+            margin: 24px 0;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 8px 0;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        /* Фильтры */
+        .filters {
+            background: var(--bg-surface);
+            padding: 20px 24px;
+            border-radius: 28px;
+            margin-bottom: 32px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+            border: 1px solid var(--border);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 140px;
+        }
+
+        .filter-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        select, input {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 28px;
+            color: var(--text-primary);
+            outline: none;
+            font-family: inherit;
+        }
+
+        .price-range {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .reset-filters {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+
+        /* Карточки (сетка/список) */
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 28px;
+            margin-bottom: 40px;
+        }
+
+        .cars-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .car-card {
+            background: var(--bg-surface);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border);
+            box-shadow: var(--card-shadow);
+        }
+
+        .car-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .cars-list .car-card {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+            padding: 16px;
+        }
+
+        .car-img {
+            background: #e2e8f0;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #475569;
+        }
+
+        .cars-list .car-img {
+            width: 200px;
+            height: 140px;
+            flex-shrink: 0;
+        }
+
+        .car-info {
+            padding: 20px;
+        }
+
+        .cars-list .car-info {
+            flex: 1;
+        }
+
+        .car-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .car-details {
+            display: flex;
+            gap: 16px;
+            margin: 12px 0;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .car-price {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 12px 0;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-fav {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .btn-fav.active {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-surface);
+            max-width: 600px;
+            width: 90%;
+            border-radius: 32px;
+            padding: 28px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+
+        /* Пустое состояние */
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-secondary);
+        }
+
+        /* Футер */
+        .footer {
+            margin-top: 60px;
+            background: var(--bg-surface);
+            padding: 32px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .filters { flex-direction: column; align-items: stretch; }
+            .cars-list .car-card { flex-direction: column; text-align: center; }
+            .cars-list .car-img { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="container">
+        <div class="navbar">
+            <div class="logo"><i class="fas fa-car"></i> AutoMarket</div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i> Тема</button>
+                <button class="view-toggle" id="gridViewBtn"><i class="fas fa-th"></i> Сетка</button>
+                <button class="view-toggle" id="listViewBtn"><i class="fas fa-list"></i> Список</button>
+                <div class="favorite-badge" id="favoritePanelBtn">
+                    <i class="fas fa-heart" style="font-size: 1.4rem; color: var(--danger);"></i>
+                    <span class="favorite-count" id="favCount">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="all">Все автомобили</button>
+        <button class="tab-btn" data-tab="favorites">Избранное ❤️</button>
+    </div>
+
+    <!-- Панель фильтров (для вкладки "Все") -->
+    <div class="filters" id="filterPanel">
+        <div class="filter-group">
+            <label>Марка</label>
+            <select id="brandFilter">
+                <option value="all">Все</option>
+                <option value="BMW">BMW</option>
+                <option value="Mercedes">Mercedes</option>
+                <option value="Audi">Audi</option>
+                <option value="Toyota">Toyota</option>
+                <option value="Hyundai">Hyundai</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Цена от (₽)</label>
+            <input type="number" id="priceFrom" placeholder="от" value="0">
+        </div>
+        <div class="filter-group">
+            <label>Цена до (₽)</label>
+            <input type="number" id="priceTo" placeholder="до" value="10000000">
+        </div>
+        <div class="filter-group">
+            <label>Год от</label>
+            <input type="number" id="yearFrom" placeholder="год" value="2000">
+        </div>
+        <button class="reset-filters" id="resetFilters">Сбросить</button>
+    </div>
+
+    <!-- Контейнер карточек -->
+    <div id="carsContainer" class="cars-grid"></div>
+</div>
+
+<div class="footer">
+    <div class="container">
+        <p><i class="fas fa-phone-alt"></i> +7 (999) 123-45-67 | <i class="fas fa-envelope"></i> info@automarket.ru</p>
+        <p style="margin-top: 12px;">© 2025 AutoMarket — продажа авто с пробегом и новых. Кредит, трейд-ин, тест-драйв.</p>
+    </div>
+</div>
+
+<!-- Модальное окно деталей авто и заявки -->
+<div id="carModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" id="closeModal">&times;</span>
+        <div id="modalBody"></div>
+        <form id="requestForm" style="margin-top: 20px;">
+            <input type="text" placeholder="Ваше имя" required style="width:100%; margin-bottom:12px; padding:12px; border-radius:40px; border:1px solid var(--border); background: var(--bg-body);">
+            <input type="tel" placeholder="Телефон" required style="width:100%; margin-bottom:12px; padding:12px; border-radius:40px;">
+            <button type="submit" class="btn btn-primary" style="width:100%">Записаться на тест-драйв</button>
+        </form>
+        <div id="modalMessage" style="margin-top: 12px; font-size:0.85rem;"></div>
+    </div>
+</div>
+
+<script>
+    // ----- МАССИВ АВТОМОБИЛЕЙ -----
+    const carsData = [
+        { id: 1, brand: "BMW", model: "X5", year: 2022, price: 6500000, mileage: 15000, image: "🚙", description: "3.0d, M Sport, полный привод, панорамная крыша." },
+        { id: 2, brand: "Mercedes", model: "E-Class", year: 2021, price: 5200000, mileage: 28000, image: "🚗", description: "E 300, AMG пакет, кожа, подогрев сидений." },
+        { id: 3, brand: "Audi", model: "Q7", year: 2023, price: 7200000, mileage: 5000, image: "🚙", description: "3.0 TFSI, кваттро, виртуальная кабина." },
+        { id: 4, brand: "Toyota", model: "Camry", year: 2022, price: 3500000, mileage: 12000, image: "🚘", description: "2.5 Hybrid, люкс, безопасность Toyota Safety Sense." },
+        { id: 5, brand: "Hyundai", model: "Santa Fe", year: 2023, price: 4100000, mileage: 8000, image: "🚙", description: "2.2 дизель, 8AT, полный привод." },
+        { id: 6, brand: "BMW", model: "X3", year: 2020, price: 4300000, mileage: 45000, image: "🚙", description: "20d xDrive, M-пакет, отличное состояние." },
+        { id: 7, brand: "Mercedes", model: "GLE", year: 2022, price: 8900000, mileage: 22000, image: "🚙", description: "GLE 450, airmatic, мультиконтурные сиденья." },
+        { id: 8, brand: "Audi", model: "A6", year: 2021, price: 4800000, mileage: 31000, image: "🚗", description: "3.0 TDI, quattro, матричные фары." },
+        { id: 9, brand: "Toyota", model: "Land Cruiser", year: 2021, price: 9500000, mileage: 35000, image: "🚙", description: "200, 4.5 дизель, трёхзонный климат." },
+        { id: 10, brand: "Hyundai", model: "Tucson", year: 2023, price: 3100000, mileage: 3000, image: "🚙", description: "1.6 T-GDI, стиль, панорама." }
+    ];
+
+    // Состояния приложения
+    let favoriteIds = JSON.parse(localStorage.getItem('favorites')) || [];
+    let currentView = localStorage.getItem('viewMode') || 'grid';   // 'grid' или 'list'
+    let currentTab = 'all';   // 'all' или 'favorites'
+    let filters = { brand: 'all', priceFrom: 0, priceTo: 10000000, yearFrom: 2000 };
+
+    // DOM элементы
+    const carsContainer = document.getElementById('carsContainer');
+    const favCountSpan = document.getElementById('favCount');
+    const brandFilter = document.getElementById('brandFilter');
+    const priceFrom = document.getElementById('priceFrom');
+    const priceTo = document.getElementById('priceTo');
+    const yearFrom = document.getElementById('yearFrom');
+    const resetFiltersBtn = document.getElementById('resetFilters');
+    const themeToggle = document.getElementById('themeToggle');
+    const gridViewBtn = document.getElementById('gridViewBtn');
+    const listViewBtn = document.getElementById('listViewBtn');
+    const favoritePanelBtn = document.getElementById('favoritePanelBtn');
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const modal = document.getElementById('carModal');
+    const closeModal = document.getElementById('closeModal');
+    const modalBody = document.getElementById('modalBody');
+    const requestForm = document.getElementById('requestForm');
+    const modalMessage = document.getElementById('modalMessage');
+
+    // Вспомогательные функции
+    function saveFavorites() {
+        localStorage.setItem('favorites', JSON.stringify(favoriteIds));
+        updateFavCount();
+        renderCurrentView();
+    }
+
+    function updateFavCount() {
+        favCountSpan.innerText = favoriteIds.length;
+    }
+
+    function toggleFavorite(carId) {
+        if (favoriteIds.includes(carId)) {
+            favoriteIds = favoriteIds.filter(id => id !== carId);
+        } else {
+            favoriteIds.push(carId);
+        }
+        saveFavorites();
+    }
+
+    function isFavorite(carId) {
+        return favoriteIds.includes(carId);
+    }
+
+    // Фильтрация авто (только для вкладки "all" + фильтры)
+    function getFilteredCars() {
+        let filtered = [...carsData];
+        if (filters.brand !== 'all') {
+            filtered = filtered.filter(car => car.brand === filters.brand);
+        }
+        filtered = filtered.filter(car => car.price >= filters.priceFrom && car.price <= filters.priceTo);
+        filtered = filtered.filter(car => car.year >= filters.yearFrom);
+        return filtered;
+    }
+
+    function getDisplayedCars() {
+        if (currentTab === 'all') {
+            return getFilteredCars();
+        } else {  // избранное
+            return carsData.filter(car => favoriteIds.includes(car.id));
+        }
+    }
+
+    function renderCars() {
+        const carsToShow = getDisplayedCars();
+        const viewClass = currentView === 'grid' ? 'cars-grid' : 'cars-list';
+        carsContainer.className = viewClass;
+
+        if (carsToShow.length === 0) {
+            carsContainer.innerHTML = `<div class="empty-state"><i class="fas fa-car-side" style="font-size:3rem"></i><p>Автомобили не найдены. Попробуйте изменить фильтры или добавьте авто в избранное.</p></div>`;
+            return;
+        }
+
+        carsContainer.innerHTML = carsToShow.map(car => {
+            const favActive = isFavorite(car.id) ? 'active' : '';
+            return `
+                <div class="car-card" data-id="${car.id}">
+                    <div class="car-img"><i class="fas ${car.image === '🚙' ? 'fa-caravan' : 'fa-car'}"></i> ${car.image}</div>
+                    <div class="car-info">
+                        <div class="car-title">${car.brand} ${car.model}</div>
+                        <div class="car-details">
+                            <span><i class="fas fa-calendar"></i> ${car.year}</span>
+                            <span><i class="fas fa-road"></i> ${car.mileage.toLocaleString()} км</span>
+                        </div>
+                        <div class="car-price">${car.price.toLocaleString()} ₽</div>
+                        <div class="btn-group">
+                            <button class="btn btn-primary view-detail" data-id="${car.id}">Подробнее</button>
+                            <button class="btn btn-fav ${favActive}" data-id="${car.id}"><i class="fas fa-heart"></i> ${isFavorite(car.id) ? 'В избранном' : 'В избранное'}</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Привязываем события после рендера
+        document.querySelectorAll('.view-detail').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(btn.dataset.id);
+                openModal(id);
+                e.stopPropagation();
+            });
+        });
+        document.querySelectorAll('.btn-fav').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(btn.dataset.id);
+                toggleFavorite(id);
+                renderCurrentView();  // перерендер чтобы обновить кнопку
+                e.stopPropagation();
+            });
+        });
+    }
+
+    function renderCurrentView() {
+        renderCars();
+    }
+
+    function openModal(carId) {
+        const car = carsData.find(c => c.id === carId);
+        if (!car) return;
+        modalBody.innerHTML = `
+            <h2>${car.brand} ${car.model}</h2>
+            <p><strong>Год:</strong> ${car.year}</p>
+            <p><strong>Цена:</strong> ${car.price.toLocaleString()} ₽</p>
+            <p><strong>Пробег:</strong> ${car.mileage.toLocaleString()} км</p>
+            <p><strong>Описание:</strong> ${car.description}</p>
+            <hr style="margin: 16px 0;">
+            <p><i class="fas fa-credit-card"></i> Кредит от 9.9% | Трейд-ин | Гарантия 1 год</p>
+        `;
+        modal.style.display = 'flex';
+        // Привязываем форму к конкретному автомобилю
+        requestForm.onsubmit = (e) => {
+            e.preventDefault();
+            const name = e.target[0].value;
+            const phone = e.target[1].value;
+            if (name && phone) {
+                modalMessage.innerHTML = `<span style="color:var(--success)">✅ Заявка на ${car.brand} ${car.model} принята! Менеджер свяжется.</span>`;
+                e.target.reset();
+                setTimeout(() => modalMessage.innerHTML = '', 3000);
+            } else {
+                modalMessage.innerHTML = `<span style="color:var(--danger)">Заполните имя и телефон</span>`;
+            }
+        };
+    }
+
+    // Применение фильтров и рендер
+    function applyFilters() {
+        filters.brand = brandFilter.value;
+        filters.priceFrom = parseInt(priceFrom.value) || 0;
+        filters.priceTo = parseInt(priceTo.value) || 10000000;
+        filters.yearFrom = parseInt(yearFrom.value) || 2000;
+        renderCurrentView();
+    }
+
+    function resetFilters() {
+        brandFilter.value = 'all';
+        priceFrom.value = 0;
+        priceTo.value = 10000000;
+        yearFrom.value = 2000;
+        applyFilters();
+    }
+
+    // Переключение темы
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') document.body.classList.add('dark');
+        else document.body.classList.remove('dark');
+    }
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark');
+        localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    });
+
+    // Переключение вида (сетка/список)
+    function setView(view) {
+        currentView = view;
+        localStorage.setItem('viewMode', view);
+        if (view === 'grid') {
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+        } else {
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+        }
+        renderCurrentView();
+    }
+
+    // События
+    brandFilter.addEventListener('change', applyFilters);
+    priceFrom.addEventListener('input', applyFilters);
+    priceTo.addEventListener('input', applyFilters);
+    yearFrom.addEventListener('input', applyFilters);
+    resetFiltersBtn.addEventListener('click', resetFilters);
+    gridViewBtn.addEventListener('click', () => setView('grid'));
+    listViewBtn.addEventListener('click', () => setView('list'));
+
+    favoritePanelBtn.addEventListener('click', () => {
+        // переключить на вкладку избранного
+        document.querySelector('.tab-btn[data-tab="favorites"]').click();
+    });
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTab = btn.dataset.tab;
+            // скрываем фильтры на вкладке избранное
+            const filterPanel = document.getElementById('filterPanel');
+            if (currentTab === 'favorites') filterPanel.style.display = 'none';
+            else filterPanel.style.display = 'flex';
+            renderCurrentView();
+        });
+    });
+
+    // модальное закрытие
+    closeModal.addEventListener('click', () => modal.style.display = 'none');
+    window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+    // инициализация
+    function init() {
+        initTheme();
+        setView(currentView);
+        updateFavCount();
+        renderCurrentView();
+        // начальные фильтры
+        document.getElementById('filterPanel').style.display = 'flex';
+    }
+    init();
+</script>
+</body>
+</html>
